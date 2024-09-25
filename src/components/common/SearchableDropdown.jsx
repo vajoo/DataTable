@@ -33,7 +33,7 @@ const SearchableDropdown = ({ options, placeholder, onChange }) => {
     };
 
     return (
-        <div className="dropdown-container" style={{ position: 'relative', width: '100%' }}>
+        <div className="dropdown-container p-10 bg-red-500" style={{ position: 'relative', width: '100%' }}>
             <input
               type="text"
               value={inputValue}
