@@ -1,3 +1,5 @@
 import SearchableDropdown from './SearchableDropdown';
 
-export { SearchableDropdown };
+export {
+    SearchableDropdown
+};

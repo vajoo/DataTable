@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { people } from '../constants';
-import { arrow_up, arrow_down } from '../assets/icons';
-import { SearchableDropdown } from '../components/common';
+import { TableHeader, TableBody, ColumnSelector } from '../components/special';
 
 const Table = () => {
-  const [data, setData] = useState(people); // State for table data
-  const [filters, setFilters] = useState({}); // State for column filters
+  const [data, setData] = useState(people);
+  const [filters, setFilters] = useState({});
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
+  const [visibleColumns, setVisibleColumns] = useState([]);
 
   const headers = Object.keys(people[0]);
 
@@ -31,66 +31,45 @@ const Table = () => {
   };
 
   const filterData = (key, value) => {
-    // Update the filter for the current column
     setFilters((prevFilters) => {
-      const newFilters = {
-        ...prevFilters,
-        [key]: value,
-      };
+      const newFilters = { ...prevFilters, [key]: value };
 
-      // After updating the filter, apply all active filters
       const filteredData = people.filter((person) =>
         headers.every((header) => {
           const filterValue = newFilters[header];
-          if (!filterValue) return true; // If no filter for this header, show all
+          if (!filterValue) return true;
           return person[header].toString().toLowerCase().includes(filterValue.toLowerCase());
         })
       );
 
       setData(filteredData);
-      return newFilters; // Return updated filters
+      return newFilters;
     });
   };
 
+  const toggleColumnVisibility = (header) => {
+    setVisibleColumns((prevColumns) =>
+      prevColumns.includes(header)
+        ? prevColumns.filter((col) => col !== header)
+        : [...prevColumns, header]
+    );
+  };
+
+  const displayedHeaders = visibleColumns.length > 0 ? visibleColumns : headers;
+
   return (
-    <div>
-      <h2>People Information</h2>
-      <table>
-        <thead>
-          <tr>
-            {headers.map((header) => (
-              <th key={header}>
-                {header.charAt(0).toUpperCase() + header.slice(1)}
-                <button onClick={() => sortData(header)}>
-                  <img src={arrow_up} alt="Sort Ascending" style={{ width: '15px' }} />
-                </button>
-                <button onClick={() => sortData(header)}>
-                  <img src={arrow_down} alt="Sort Descending" style={{ width: '15px' }} />
-                </button>
-              </th>
-            ))}
-          </tr>
-          <tr>
-            {headers.map((header) => (
-              <th key={header}>
-                <SearchableDropdown
-                  options={getUniqueValues(header)}
-                  placeholder={`Filter by ${header}`}
-                  onChange={(value) => filterData(header, value)}
-                />
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((person, index) => (
-            <tr key={index}>
-              {headers.map((header) => (
-                <td key={header}>{person[header]}</td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
+    <div className="overflow-x-auto">
+      <h2 className="text-xl font-bold mb-4">People Information</h2>
+      <ColumnSelector headers={headers} visibleColumns={visibleColumns} toggleColumnVisibility={toggleColumnVisibility} />
+      <table className="min-w-full bg-white border border-gray-300">
+        <TableHeader
+          headers={headers}
+          sortData={sortData}
+          getUniqueValues={getUniqueValues}
+          filterData={filterData}
+          displayedHeaders={displayedHeaders}
+        />
+        <TableBody data={data} displayedHeaders={displayedHeaders} />
       </table>
     </div>
   );
