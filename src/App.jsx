@@ -4,10 +4,10 @@ import { Table } from "./sections";
 
 function App() {
   return(
-    <div>
-      <Navbar />
+    <div className="p-4">
+      {/* <Navbar /> */}
       <Table />
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 }
