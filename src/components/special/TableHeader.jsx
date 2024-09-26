@@ -6,6 +6,7 @@ const TableHeader = ({ headers, sortData, getUniqueValues, filterData, customCol
   return (
     <thead>
           <tr>
+            <th className="px-6 pt-3 text-left text-lg font-medium text-gray-700 uppercase tracking-wider border-l border-gray-300"></th>
             {headers.map((header) => (
               <th
                 key={header}
@@ -22,6 +23,7 @@ const TableHeader = ({ headers, sortData, getUniqueValues, filterData, customCol
             ))}
           </tr>
           <tr>
+            <th className="px-2 py-3 border-b border-l border-gray-300"></th>
             {headers.map((header) => (
               <th key={header} className="px-2 py-3 border-b border-l border-gray-300">
                 <SearchableDropdown
