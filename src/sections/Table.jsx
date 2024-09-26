@@ -60,7 +60,6 @@ const Table = ({ initialData = [], customColumnNames = {} }) => {
 
   const finalVisibleColumns = visibleColumns.length > 0 ? visibleColumns : headers;
 
-
   const handleRowClick = (rowData) => {
     setSelectedRowData(rowData);
     setModalOpen(true); 
