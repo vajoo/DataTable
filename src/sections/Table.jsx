@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import { TableHeader, TableBody, ColumnSelector } from '../components/special';
+import { Modal } from '../components/layout';
 
 const Table = ({ initialData = [], customColumnNames = {} }) => {
   const [tableData, setTableData] = useState(initialData);
   const [filters, setFilters] = useState({});
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
   const [visibleColumns, setVisibleColumns] = useState([]);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedRowData, setSelectedRowData] = useState(null);
 
   const headers = Object.keys(initialData[0]);
 
@@ -56,9 +59,23 @@ const Table = ({ initialData = [], customColumnNames = {} }) => {
 
   const finalVisibleColumns = visibleColumns.length > 0 ? visibleColumns : headers;
 
-  
+
   const handleRowClick = (rowData) => {
-    console.log('Row data clicked:', rowData);
+    setSelectedRowData(rowData);
+    setModalOpen(true); 
+  };
+
+  const handleModalClose = () => {
+    setModalOpen(false);
+    setSelectedRowData(null);
+  };
+
+  const handleSave = (updatedRowData) => {
+    const updatedData = tableData.map((row) =>
+      row === selectedRowData ? updatedRowData : row
+    );
+    setTableData(updatedData); 
+    handleModalClose(); 
   };
 
   return (
@@ -75,6 +92,12 @@ const Table = ({ initialData = [], customColumnNames = {} }) => {
         />
         <TableBody data={tableData} displayedHeaders={finalVisibleColumns} onRowClick={handleRowClick} />
       </table>
+      <Modal 
+        isOpen={modalOpen} 
+        onClose={handleModalClose} 
+        rowData={selectedRowData} 
+        onSave={handleSave}
+      />
     </div>
   );
 };
