@@ -2,16 +2,16 @@ import React from 'react';
 import { SearchableDropdown } from '../common';
 import { arrow_up, arrow_down } from '../../assets/icons';
 
-const TableHeader = ({ headers, sortData, getUniqueValues, filterData, displayedHeaders }) => {
+const TableHeader = ({ headers, sortData, getUniqueValues, filterData, customColumnNames }) => {
   return (
     <thead>
           <tr>
-            {displayedHeaders.map((header) => (
+            {headers.map((header) => (
               <th
                 key={header}
                 className="px-6 pt-3 text-left text-lg font-medium text-gray-700 uppercase tracking-wider border-l border-gray-300"
               >
-                {header.charAt(0).toUpperCase() + header.slice(1)}
+                {customColumnNames[header] || header.charAt(0).toUpperCase() + header.slice(1)} {/* Use custom names */}
                 <button onClick={() => sortData(header)} className="ml-2">
                   <img src={arrow_up} alt="Sort Ascending" className="w-4 inline" />
                 </button>
@@ -22,11 +22,11 @@ const TableHeader = ({ headers, sortData, getUniqueValues, filterData, displayed
             ))}
           </tr>
           <tr>
-            {displayedHeaders.map((header) => (
-              <th key={header} className="px-6 py-3 border-b border-l border-gray-300">
+            {headers.map((header) => (
+              <th key={header} className="px-2 py-3 border-b border-l border-gray-300">
                 <SearchableDropdown
                   options={getUniqueValues(header)}
-                  placeholder={`Filter by ${header}`}
+                  placeholder={`Filter by ${customColumnNames[header] || header}`}
                   onChange={(value) => filterData(header, value)}
                 />
               </th>
