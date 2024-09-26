@@ -56,6 +56,11 @@ const Table = ({ initialData = [], customColumnNames = {} }) => {
 
   const finalVisibleColumns = visibleColumns.length > 0 ? visibleColumns : headers;
 
+  
+  const handleRowClick = (rowData) => {
+    console.log('Row data clicked:', rowData);
+  };
+
   return (
     <div className="overflow-x-auto">
       <h2 className="text-xl font-bold mb-4">People Information</h2>
@@ -68,7 +73,7 @@ const Table = ({ initialData = [], customColumnNames = {} }) => {
           filterData={filterData}
           customColumnNames={customColumnNames}
         />
-        <TableBody data={tableData} displayedHeaders={finalVisibleColumns} />
+        <TableBody data={tableData} displayedHeaders={finalVisibleColumns} onRowClick={handleRowClick} />
       </table>
     </div>
   );
