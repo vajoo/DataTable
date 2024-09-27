@@ -23,24 +23,25 @@ const Modal = ({ isOpen, onClose, rowData, onSave }) => {
 
   if (!isOpen) return null;
 
-  const handleInputChange = (e, key) => {
-    const originalValue = rowData[key];
-    let newValue = e.target.value;
+    const handleInputChange = (e, key) => {
+        const originalValue = rowData[key];
+        let newValue = e.target.value;
 
-    // Check if the original value is a date
-    const isDate = typeof originalValue === 'string' && !isNaN(Date.parse(originalValue));
+        console.log(newValue);
 
-    if (typeof originalValue === 'number') {
-      newValue = parseFloat(newValue) || 0;
-    } else if (typeof originalValue === 'boolean') {
-      newValue = e.target.checked; // Use e.target.checked for boolean values
-    } else if (isDate) {
-      newValue = new Date(newValue); // Convert to Date object
-    }
+        const isDate = typeof originalValue === 'string' && !isNaN(Date.parse(originalValue));
 
-    const newRowData = { ...formData, [key]: newValue };
-    setFormData(newRowData);
-  };
+        if (typeof originalValue === 'number') {
+            newValue = newValue === '' ? 0 : parseFloat(newValue);
+        } else if (typeof originalValue === 'boolean') {
+            newValue = e.target.checked;
+        } else if (isDate) {
+            newValue = new Date(newValue); 
+        }
+
+        const newRowData = { ...formData, [key]: newValue };
+        setFormData(newRowData);
+    };
 
   const handleSave = () => {
     const savedData = { ...formData };
@@ -64,30 +65,34 @@ const Modal = ({ isOpen, onClose, rowData, onSave }) => {
 
         <h2 className="text-xl font-bold mb-4">Edit Row Data</h2>
         {Object.keys(formData).map((key) => {
-          // Determine if the field is a date
-          const isDate = typeof rowData[key] === 'string' && !isNaN(Date.parse(rowData[key]));
-          const isBoolean = typeof rowData[key] === 'boolean';
+            const isDate = typeof rowData[key] === 'string' && !isNaN(Date.parse(rowData[key]));
+            const isBoolean = typeof rowData[key] === 'boolean';
+            const isNumber = typeof rowData[key] === 'number';
 
-          return (
-            <div key={key} className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">{key}</label>
-              {isBoolean ? (
-                <input
-                  type="checkbox"
-                  checked={formData[key]}
-                  onChange={(e) => handleInputChange(e, key)}
-                  className="mt-1 w-5 h-5"
-                />
-              ) : (
-                <input
-                  type={isDate ? 'date' : 'text'}
-                  value={isDate ? formData[key]?.toISOString().split('T')[0] : formData[key]} // Format to YYYY-MM-DD for date input
-                  onChange={(e) => handleInputChange(e, key)}
-                  className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-                />
-              )}
-            </div>
-          );
+            return (
+                <div key={key} className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700">{key}</label>
+                    {isBoolean ? (
+                        <input
+                            type="checkbox"
+                            checked={formData[key]}
+                            onChange={(e) => handleInputChange(e, key)}
+                            className="mt-1 w-5 h-5"
+                        />
+                    ) : (
+                        <input
+                            type={isDate ? 'date' : isNumber ? 'number' : 'text'}
+                            value={
+                                isDate ? formData[key]?.toISOString().split('T')[0] : 
+                                isNumber ? (formData[key] || '').toString() : // Ensure it's a string
+                                formData[key] // For text input, just use the original value
+                            }
+                            onChange={(e) => handleInputChange(e, key)}
+                            className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                        />
+                    )}
+                </div>
+            );
         })}
 
         <div className="flex justify-end space-x-2 mt-4">
