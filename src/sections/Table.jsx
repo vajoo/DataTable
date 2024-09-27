@@ -1,13 +1,19 @@
 import React, { useState } from 'react';
 import { TableHeader, TableBody, ColumnSelector } from '../components/special';
-import { Modal } from '../components/layout';
+import { Modal, ConfirmModal } from '../components/layout';
 
 const Table = ({ initialData = [], customColumnNames = {} }) => {
+  initialData.forEach((data, index) => {
+    data.id = index + 1; 
+  });
+
   const [tableData, setTableData] = useState(initialData);
   const [filters, setFilters] = useState({});
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
   const [visibleColumns, setVisibleColumns] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+  const [confirmAction, setConfirmAction] = useState(() => () => {});
   const [selectedRowData, setSelectedRowData] = useState(null);
   const [checkedRows, setCheckedRows] = useState([]);
 
@@ -88,8 +94,23 @@ const Table = ({ initialData = [], customColumnNames = {} }) => {
     });
   };
 
-  const logCheckedRows = () => {
+  const sendCheckedRows = () => {
     console.log("Checked Rows:", checkedRows);
+  };
+
+  const deleteCheckedRows = () => {
+    setTableData((prevData) => prevData.filter(row => !checkedRows.includes(row)));
+    setCheckedRows((prevCheckedRows) => prevCheckedRows.filter(row => !checkedRows.includes(row)));
+  };
+
+  const handleOpenSendModal = () => {
+    setConfirmAction(() => sendCheckedRows); // Set dynamic onSave to sendCheckedRows
+    setConfirmModalOpen(true);
+  };
+
+  const handleOpenDeleteModal = () => {
+    setConfirmAction(() => deleteCheckedRows); // Set dynamic onSave to deleteCheckedRows
+    setConfirmModalOpen(true);
   };
 
 
@@ -98,7 +119,8 @@ const Table = ({ initialData = [], customColumnNames = {} }) => {
       <h2 className="text-xl font-bold mb-4">People Information</h2>
       <ColumnSelector headers={headers} visibleColumns={visibleColumns} toggleColumnVisibility={toggleColumnVisibility} />
       <div className="w-full flex justify-end">
-      <button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded shadow-md transition-all duration-300 ease-in-out my-4" onClick={logCheckedRows}>Log Checked Rows</button>
+        <button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded shadow-md transition-all duration-300 ease-in-out my-4" onClick={() => handleOpenSendModal(true)}>Send Checked Rows</button>
+        <button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded shadow-md transition-all duration-300 ease-in-out my-4 ml-4" onClick={() => handleOpenDeleteModal(true)}>Delete Checked Rows</button>
       </div>
       <table className="min-w-full bg-white border border-gray-300">
         <TableHeader
@@ -115,6 +137,11 @@ const Table = ({ initialData = [], customColumnNames = {} }) => {
         onClose={handleModalClose} 
         rowData={selectedRowData} 
         onSave={handleSave}
+      />
+      <ConfirmModal 
+        isOpen={confirmModalOpen} 
+        onClose={() => setConfirmModalOpen(false)} 
+        onSave={confirmAction}
       />
     </div>
   );

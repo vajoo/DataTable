@@ -1,31 +1,38 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { cross, check_mark } from '../../assets/icons';
 
 const TableBody = ({ data, displayedHeaders, onRowClick, onCheckboxToggle }) => {
-  const [checkboxStates, setCheckboxStates] = useState(
-    data.map(rowData => false)
-  );
+  const [checkboxStates, setCheckboxStates] = useState({});
 
-  const handleCheckboxToggle = (index, rowData) => {
-    const updatedCheckboxStates = [...checkboxStates];
-    updatedCheckboxStates[index] = !updatedCheckboxStates[index];
-    setCheckboxStates(updatedCheckboxStates);
+  useEffect(() => {
+    const newCheckboxStates = {};
+    data.forEach(rowData => {
+      newCheckboxStates[rowData.id] = checkboxStates[rowData.id] || false;
+    });
+    setCheckboxStates(newCheckboxStates);
+  }, [data]);
 
-    onCheckboxToggle(rowData, updatedCheckboxStates[index]);
+  const handleCheckboxToggle = (rowData) => {
+    setCheckboxStates((prevState) => ({
+      ...prevState,
+      [rowData.id]: !prevState[rowData.id],
+    }));
+
+    onCheckboxToggle(rowData, !checkboxStates[rowData.id]);
   };
 
   return (
     <tbody>
       {data.map((rowData, index) => (
-        <tr key={index} className="odd:bg-gray-50 even:bg-white hover:bg-gray-200 active:bg-gray-300">
+        <tr key={rowData.id} className="odd:bg-gray-50 even:bg-white hover:bg-gray-200 active:bg-gray-300">
           <td
             className="px-6 py-2 border-b border-l border-gray-300 cursor-pointer"
-            onClick={() => handleCheckboxToggle(index, rowData)} 
+            onClick={() => handleCheckboxToggle(rowData)} 
           >
             <input
               type="checkbox"
-              checked={checkboxStates[index]}
-              onChange={() => handleCheckboxToggle(index, rowData)}
+              checked={checkboxStates[rowData.id] || false}  
+              onChange={() => handleCheckboxToggle(rowData)}
               onClick={(e) => e.stopPropagation()} 
               className="cursor-pointer"
             />
