@@ -6,19 +6,54 @@ const Modal = ({ isOpen, onClose, rowData, onSave }) => {
 
   useEffect(() => {
     if (rowData) {
-      setFormData(rowData);
+      // Convert date strings to Date objects if applicable
+      const convertedData = Object.keys(rowData).reduce((acc, key) => {
+        const originalValue = rowData[key];
+        
+        // Check if the originalValue is a valid date string
+        const isDate = typeof originalValue === 'string' && !isNaN(Date.parse(originalValue));
+        
+        // Store as Date if it's a date string; otherwise, store the original value
+        acc[key] = isDate ? new Date(originalValue) : originalValue; 
+        return acc;
+      }, {});
+      setFormData(convertedData);
     }
   }, [rowData]);
 
   if (!isOpen) return null;
 
-  const handleInputChange = (e, key) => {
-    const newRowData = { ...formData, [key]: e.target.value };
-    setFormData(newRowData);
-  };
+    const handleInputChange = (e, key) => {
+        const originalValue = rowData[key];
+        let newValue = e.target.value;
+
+        console.log(newValue);
+
+        const isDate = typeof originalValue === 'string' && !isNaN(Date.parse(originalValue));
+
+        if (typeof originalValue === 'number') {
+            newValue = newValue === '' ? 0 : parseFloat(newValue);
+        } else if (typeof originalValue === 'boolean') {
+            newValue = e.target.checked;
+        } else if (isDate) {
+            newValue = new Date(newValue); 
+        }
+
+        const newRowData = { ...formData, [key]: newValue };
+        setFormData(newRowData);
+    };
 
   const handleSave = () => {
-    onSave(formData);
+    const savedData = { ...formData };
+    
+    // Format date fields as yyyy-MM-dd before saving
+    Object.keys(savedData).forEach(key => {
+      if (savedData[key] instanceof Date) {
+        savedData[key] = savedData[key].toISOString().split('T')[0]; // Format to yyyy-MM-dd
+      }
+    });
+
+    onSave(savedData);
   };
 
   return (
@@ -29,17 +64,36 @@ const Modal = ({ isOpen, onClose, rowData, onSave }) => {
         </button>
 
         <h2 className="text-xl font-bold mb-4">Edit Row Data</h2>
-        {Object.keys(formData).map((key) => (
-          <div key={key} className="mb-4">
-            <label className="block text-sm font-medium text-gray-700">{key}</label>
-            <input
-              type="text"
-              value={formData[key]}
-              onChange={(e) => handleInputChange(e, key)}
-              className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-            />
-          </div>
-        ))}
+        {Object.keys(formData).map((key) => {
+            const isDate = typeof rowData[key] === 'string' && !isNaN(Date.parse(rowData[key]));
+            const isBoolean = typeof rowData[key] === 'boolean';
+            const isNumber = typeof rowData[key] === 'number';
+
+            return (
+                <div key={key} className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700">{key}</label>
+                    {isBoolean ? (
+                        <input
+                            type="checkbox"
+                            checked={formData[key]}
+                            onChange={(e) => handleInputChange(e, key)}
+                            className="mt-1 w-5 h-5"
+                        />
+                    ) : (
+                        <input
+                            type={isDate ? 'date' : isNumber ? 'number' : 'text'}
+                            value={
+                                isDate ? formData[key]?.toISOString().split('T')[0] : 
+                                isNumber ? (formData[key] || '').toString() : // Ensure it's a string
+                                formData[key] // For text input, just use the original value
+                            }
+                            onChange={(e) => handleInputChange(e, key)}
+                            className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                        />
+                    )}
+                </div>
+            );
+        })}
 
         <div className="flex justify-end space-x-2 mt-4">
           <button onClick={onClose} className="bg-gray-300 text-gray-700 rounded-md px-4 py-2 transition-transform duration-200 ease-in-out transform hover:scale-105 active:scale-95">Cancel</button>
