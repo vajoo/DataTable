@@ -24,31 +24,32 @@ const Modal = ({ isOpen, onClose, rowData, onSave }) => {
   if (!isOpen) return null;
 
     const handleInputChange = (e, key) => {
-        const originalValue = rowData[key];
-        let newValue = e.target.value;
-
-        console.log(newValue);
-
-        const isDate = typeof originalValue === 'string' && !isNaN(Date.parse(originalValue));
-
-        if (typeof originalValue === 'number') {
-            newValue = newValue === '' ? 0 : parseFloat(newValue);
-        } else if (typeof originalValue === 'boolean') {
-            newValue = e.target.checked;
-        } else if (isDate) {
-            newValue = new Date(newValue); 
-        }
-
-        const newRowData = { ...formData, [key]: newValue };
-        setFormData(newRowData);
+      const originalValue = rowData[key];
+      let newValue = e.target.value;
+    
+      const isDate = typeof originalValue === 'string' && !isNaN(Date.parse(originalValue));
+    
+      if (typeof originalValue === 'number') {
+        newValue = newValue === '' ? 0 : parseFloat(newValue);
+      } else if (typeof originalValue === 'boolean') {
+        newValue = e.target.checked;
+      } else if (isDate) {
+        // Only convert to Date if the string is a valid date
+        const parsedDate = Date.parse(newValue);
+        newValue = isNaN(parsedDate) ? newValue : new Date(newValue); 
+      }
+    
+      const newRowData = { ...formData, [key]: newValue };
+      setFormData(newRowData);
     };
+    
 
   const handleSave = () => {
     const savedData = { ...formData };
     
     // Format date fields as yyyy-MM-dd before saving
     Object.keys(savedData).forEach(key => {
-      if (savedData[key] instanceof Date) {
+      if (savedData[key] instanceof Date && !isNaN(savedData[key].getTime())) {
         savedData[key] = savedData[key].toISOString().split('T')[0]; // Format to yyyy-MM-dd
       }
     });
@@ -65,6 +66,9 @@ const Modal = ({ isOpen, onClose, rowData, onSave }) => {
 
         <h2 className="text-xl font-bold mb-4">Edit Row Data</h2>
         {Object.keys(formData).map((key) => {
+            if (key === 'id') {
+                return null;
+            }
             const isDate = typeof rowData[key] === 'string' && !isNaN(Date.parse(rowData[key]));
             const isBoolean = typeof rowData[key] === 'boolean';
             const isNumber = typeof rowData[key] === 'number';
@@ -81,15 +85,15 @@ const Modal = ({ isOpen, onClose, rowData, onSave }) => {
                         />
                     ) : (
                         <input
-                            type={isDate ? 'date' : isNumber ? 'number' : 'text'}
-                            value={
-                                isDate ? formData[key]?.toISOString().split('T')[0] : 
-                                isNumber ? (formData[key] || '').toString() : // Ensure it's a string
-                                formData[key] // For text input, just use the original value
-                            }
-                            onChange={(e) => handleInputChange(e, key)}
-                            className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-                        />
+                          type={isDate ? 'date' : isNumber ? 'number' : 'text'}
+                          value={
+                              isDate && formData[key] instanceof Date
+                                  ? formData[key]?.toISOString().split('T')[0] // Safely format valid dates
+                                  : formData[key] // For non-date types or invalid date strings
+                          }
+                          onChange={(e) => handleInputChange(e, key)}
+                          className="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                      />
                     )}
                 </div>
             );
