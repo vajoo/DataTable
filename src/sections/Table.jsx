@@ -3,6 +3,10 @@ import { TableHeader, TableBody, ColumnSelector } from '../components/special';
 import { Modal } from '../components/layout';
 
 const Table = ({ initialData = [], customColumnNames = {} }) => {
+  initialData.forEach((data, index) => {
+    data.id = index + 1; 
+  });
+
   const [tableData, setTableData] = useState(initialData);
   const [filters, setFilters] = useState({});
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
