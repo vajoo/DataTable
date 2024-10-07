@@ -41,10 +41,10 @@ const SearchableDropdown = ({ options, placeholder, onChange }) => {
             onChange={handleInputChange}
             onFocus={() => setShowDropdown(true)}
             onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
-            className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 font-normal placeholder:text-sm"
           />
           {showDropdown && (
-              <ul className="absolute w-full mt-1 max-h-48 overflow-y-auto bg-white border border-gray-300 rounded shadow-lg z-10">
+              <ul className="absolute w-full mt-1 max-h-48 overflow-y-auto bg-white border border-gray-300 rounded shadow-lg z-10 font-normal">
                 {filteredOptions.map((option, index) => (
                   <React.Fragment key={index}>
                     <li 
@@ -55,7 +55,7 @@ const SearchableDropdown = ({ options, placeholder, onChange }) => {
                     </li>
                     {/* Add dividers between items, but not after the last item */}
                     {index < filteredOptions.length - 1 && (
-                      <div className="mx-4 border-t border-gray-100"></div>
+                      <div className="mx-4 border-t border-gray-200"></div>
                     )}
                   </React.Fragment>
                 ))}

@@ -54,6 +54,8 @@ const Modal = ({ isOpen, onClose, rowData, onSave }) => {
       }
     });
 
+    console.log('Saved Data:', savedData);
+
     onSave(savedData);
   };
 
