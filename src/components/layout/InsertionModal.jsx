@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import { cross } from '../../assets/icons';
+import SearchableDropdown from '../common/SearchableDropdown';
 
 // Example dynamic field configuration
 const fieldConfig = [
     { label: "Name", name: "name", type: "text" },
     { label: "Age", name: "age", type: "number" },
-    { label: "Job", name: "job", type: "text" },
-    { label: "Favorite Color", name: "favorite_color", type: "text" },
+    { label: "Job", name: "job", type: "dropdown", options: ["Software Engineer", "Data Scientist", "Project Manager", "UX Designer"] },
+    { label: "Favorite Color", name: "favorite_color", type: "dropdown", options: ["Blue", "Green", "Red", "Yellow", "Purple", "Orange", "Pink"] },
     { label: "City", name: "city", type: "text" },
     { label: "Hobbies", name: "hobbies", type: "text" },
     { label: "Salary", name: "salary", type: "number" },
@@ -36,6 +37,13 @@ const InsertionModal = ({ isOpen, onClose, onSave }) => {
         }));
     };
 
+    const handleDropdownChange = (name, value) => {
+        setFormData(prevData => ({
+            ...prevData,
+            [name]: value,
+        }));
+    };
+
     // Handle the insertion of new data
     const handleInsert = () => {
         const savedData = { ...formData };
@@ -55,7 +63,6 @@ const InsertionModal = ({ isOpen, onClose, onSave }) => {
 
                 <h2 className="text-xl font-bold mb-4">Insert New Data</h2>
 
-                {/* Loop through the fieldConfig to create input fields dynamically */}
                 {fieldConfig.map((field) => (
                     <div key={field.name} className="mb-4">
                         <label className="block text-sm font-medium text-gray-700">
@@ -70,11 +77,18 @@ const InsertionModal = ({ isOpen, onClose, onSave }) => {
                                 onChange={handleInputChange}
                                 className="w-5 h-5"
                             />
+                        ) : field.type === "dropdown" ? (
+                            <SearchableDropdown
+                                options={field.options}
+                                placeholder={`Select ${field.label}`}
+                                onChange={(value) => handleDropdownChange(field.name, value)}
+                            />
                         ) : (
                             <input
                                 type={field.type}
                                 name={field.name}
                                 value={formData[field.name]}
+                                placeholder={`Select ${field.label}`}
                                 onChange={handleInputChange}
                                 className="mt-1 block w-full border border-gray-300 rounded-md p-2"
                             />
@@ -99,6 +113,7 @@ const InsertionModal = ({ isOpen, onClose, onSave }) => {
             </div>
         </div>
     );
+
 };
 
 export default InsertionModal;
