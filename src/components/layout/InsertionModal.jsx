@@ -88,7 +88,7 @@ const InsertionModal = ({ isOpen, onClose, onSave }) => {
                                 type={field.type}
                                 name={field.name}
                                 value={formData[field.name]}
-                                placeholder={`Select ${field.label}`}
+                                placeholder={`Fill in ${field.label}`}
                                 onChange={handleInputChange}
                                 className="mt-1 block w-full border border-gray-300 rounded-md p-2"
                             />
