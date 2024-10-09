@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
-import { TableHeader, TableBody, ColumnSelector } from '../components/special';
-import { Modal, ConfirmModal } from '../components/layout';
+import { v4 as uuidv4 } from 'uuid'; // Import uuid library
+import { TableHeader, TableBody, TableFooter, ColumnSelector } from '../components/special';
+import { EditModal, ConfirmModal, InsertionModal } from '../components/layout';
 
-const Table = ({ initialData = [], customColumnNames = {} }) => {
-  initialData.forEach((data, index) => {
-    data.id = index + 1; 
-  });
-
-  const [tableData, setTableData] = useState(initialData);
+const Table = ({ initialData = [], customColumnNames = {}, rowsPerPage = 50 }) => {
+  const [tableData, setTableData] = useState(() =>
+    initialData.map(data => ({ ...data, uuid: uuidv4() })) // Assign a unique ID
+  );
   const [filters, setFilters] = useState({});
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
   const [visibleColumns, setVisibleColumns] = useState([]);
-  const [modalOpen, setModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [insertModalOpen, setInsertModalOpen] = useState(false);
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const [confirmAction, setConfirmAction] = useState(() => () => {});
   const [selectedRowData, setSelectedRowData] = useState(null);
@@ -24,6 +24,7 @@ const Table = ({ initialData = [], customColumnNames = {} }) => {
   };
 
   const sortData = (key) => {
+    setCurrentPage(1);
     let direction = 'asc';
     if (sortConfig.key === key && sortConfig.direction === 'asc') {
       direction = 'desc';
@@ -40,6 +41,7 @@ const Table = ({ initialData = [], customColumnNames = {} }) => {
   };
 
   const filterData = (key, value) => {
+    setCurrentPage(1);
     setFilters((prevFilters) => {
       const newFilters = { ...prevFilters, [key]: value };
 
@@ -68,20 +70,7 @@ const Table = ({ initialData = [], customColumnNames = {} }) => {
 
   const handleRowClick = (rowData) => {
     setSelectedRowData(rowData);
-    setModalOpen(true); 
-  };
-
-  const handleModalClose = () => {
-    setModalOpen(false);
-    setSelectedRowData(null);
-  };
-
-  const handleSave = (updatedRowData) => {
-    const updatedData = tableData.map((row) =>
-      row === selectedRowData ? updatedRowData : row
-    );
-    setTableData(updatedData); 
-    handleModalClose(); 
+    setEditModalOpen(true); 
   };
 
   const handleCheckboxToggle = (rowData, isChecked) => {
@@ -89,9 +78,44 @@ const Table = ({ initialData = [], customColumnNames = {} }) => {
       if (isChecked) {
         return [...prevCheckedRows, rowData];
       } else {
-        return prevCheckedRows.filter(row => row !== rowData);
+        return prevCheckedRows.filter(row => row.uuid !== rowData.uuid);
       }
     });
+  };
+
+  const handleEditModalClose = () => {
+    setEditModalOpen(false);
+    setSelectedRowData(null);
+  };
+
+  const handleInsertModalClose = () => {
+    setInsertModalOpen(false);
+  };
+
+  const handleEditSave = (updatedRowData) => {
+    const updatedData = tableData.map((row) =>
+      row.uuid === updatedRowData.uuid ? updatedRowData : row
+    );
+    setTableData(updatedData); 
+    handleEditModalClose(); 
+  };
+
+  const handleInsertSave = (newRowData) => {
+    const hasIdField = tableData.some(row => row.hasOwnProperty('id'));
+    let newRow;
+
+    if (hasIdField) {
+        const maxId = tableData.reduce((max, row) => (row.id > max ? row.id : max), 0);
+        const newId = maxId + 1;
+
+        newRow = { id: newId, ...newRowData };
+    } else {
+        newRow = { ...newRowData };
+    }
+
+    const updatedData = [...tableData, { ...newRow, uuid: uuidv4() }]; // Assign a unique ID for the new row
+    setTableData(updatedData);
+    handleInsertModalClose();
   };
 
   const sendCheckedRows = () => {
@@ -99,6 +123,7 @@ const Table = ({ initialData = [], customColumnNames = {} }) => {
   };
 
   const deleteCheckedRows = () => {
+    setCurrentPage(1);
     setTableData((prevData) => prevData.filter(row => !checkedRows.includes(row)));
     setCheckedRows((prevCheckedRows) => prevCheckedRows.filter(row => !checkedRows.includes(row)));
   };
@@ -113,14 +138,29 @@ const Table = ({ initialData = [], customColumnNames = {} }) => {
     setConfirmModalOpen(true);
   };
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const totalPages = Math.ceil(tableData.length / rowsPerPage);
+
+  const startIndex = (currentPage - 1) * rowsPerPage;
+  const endIndex = startIndex + rowsPerPage;
+  const currentData = tableData.slice(startIndex, endIndex);
+
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+        setCurrentPage(newPage);
+    }
+  };
 
   return (
     <div className="overflow-x-auto">
-      <h2 className="text-xl font-bold mb-4">People Information</h2>
-      <ColumnSelector headers={headers} visibleColumns={visibleColumns} toggleColumnVisibility={toggleColumnVisibility} />
-      <div className="w-full flex justify-end">
-        <button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded shadow-md transition-all duration-300 ease-in-out my-4" onClick={() => handleOpenSendModal(true)}>Send Checked Rows</button>
-        <button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded shadow-md transition-all duration-300 ease-in-out my-4 ml-4" onClick={() => handleOpenDeleteModal(true)}>Delete Checked Rows</button>
+      <p>Number of items: {tableData.length}</p>
+      <div className="w-full flex flex-row justify-between">
+        <ColumnSelector headers={headers} visibleColumns={visibleColumns} toggleColumnVisibility={toggleColumnVisibility} />
+        <div className="flex">
+          <button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded shadow-md transition-all duration-300 ease-in-out my-4" onClick={() => handleOpenSendModal(true)}>Send Checked Rows</button>
+          <button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded shadow-md transition-all duration-300 ease-in-out my-4 ml-4" onClick={() => setInsertModalOpen(true)}>Insert new Row</button>
+          <button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded shadow-md transition-all duration-300 ease-in-out my-4 ml-4" onClick={() => handleOpenDeleteModal(true)}>Delete Checked Rows</button>
+        </div>
       </div>
       <table className="min-w-full bg-white border border-gray-300">
         <TableHeader
@@ -130,18 +170,30 @@ const Table = ({ initialData = [], customColumnNames = {} }) => {
           filterData={filterData}
           customColumnNames={customColumnNames}
         />
-        <TableBody data={tableData} displayedHeaders={finalVisibleColumns} onRowClick={handleRowClick} onCheckboxToggle={handleCheckboxToggle} />
+        <TableBody data={currentData} displayedHeaders={finalVisibleColumns} onRowClick={handleRowClick} onCheckboxToggle={handleCheckboxToggle} />
+        {currentData.length > 0 && (
+          <TableFooter
+            currentPage={currentPage}
+            totalPages={totalPages}
+            handlePageChange={handlePageChange}
+          />
+        )}
       </table>
-      <Modal 
-        isOpen={modalOpen} 
-        onClose={handleModalClose} 
+      <EditModal 
+        isOpen={editModalOpen} 
+        onClose={handleEditModalClose} 
         rowData={selectedRowData} 
-        onSave={handleSave}
+        onSave={handleEditSave}
       />
       <ConfirmModal 
         isOpen={confirmModalOpen} 
         onClose={() => setConfirmModalOpen(false)} 
         onSave={confirmAction}
+      />
+      <InsertionModal
+        isOpen={insertModalOpen}
+        onClose={handleInsertModalClose}
+        onSave={handleInsertSave}
       />
     </div>
   );
