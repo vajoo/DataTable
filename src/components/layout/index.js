@@ -1,11 +1,13 @@
 import Navbar from './navbar';
 import Footer from './footer';
-import Modal from './Modal';
+import EditModal from './EditModal';
 import ConfirmModal from './ConfirmModal';
+import InsertionModal from './InsertionModal';
 
 export {
     Navbar,
     Footer,
-    Modal,
+    EditModal,
     ConfirmModal,
+    InsertionModal
 };

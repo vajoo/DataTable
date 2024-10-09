@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { cross } from '../../assets/icons';
 
-const Modal = ({ isOpen, onClose, rowData, onSave }) => {
+const EditModal = ({ isOpen, onClose, rowData, onSave }) => {
   const [formData, setFormData] = useState({});
 
   useEffect(() => {
@@ -108,4 +108,4 @@ const Modal = ({ isOpen, onClose, rowData, onSave }) => {
   );
 };
 
-export default Modal;
+export default EditModal;

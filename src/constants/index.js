@@ -15600,3 +15600,186 @@ export const people = [
     "date": "2021-05-09"
   },
 ];
+
+export const people_short = [
+  {
+    "name": "Alice Johnson",
+    "age": 28,
+    "job": "Software Engineer",
+    "favorite_color": "Blue",
+    "city": "San Francisco",
+    "hobbies": "Reading, Hiking",
+    "salary": 95000,
+    "married": true,
+    "children": 1,
+    "date": "2023-01-15"
+  },
+  {
+    "name": "Bob Smith",
+    "age": 35,
+    "job": "Data Scientist",
+    "favorite_color": "Green",
+    "city": "New York",
+    "hobbies": "Cycling, Chess",
+    "salary": 120000,
+    "married": false,
+    "children": 0,
+    "date": "2022-08-22"
+  },
+  {
+    "name": "Carol Martinez",
+    "age": 42,
+    "job": "Project Manager",
+    "favorite_color": "Red",
+    "city": "Los Angeles",
+    "hobbies": "Cooking, Traveling",
+    "salary": 110000,
+    "married": true,
+    "children": 2,
+    "date": "2021-06-30"
+  },
+  {
+    "name": "Dave Thompson",
+    "age": 29,
+    "job": "UX Designer",
+    "favorite_color": "Yellow",
+    "city": "Austin",
+    "hobbies": "Painting, Gaming",
+    "salary": 87000,
+    "married": false,
+    "children": 0,
+    "date": "2023-03-10"
+  },
+  {
+    "name": "Emily Clark",
+    "age": 50,
+    "job": "HR Manager",
+    "favorite_color": "Purple",
+    "city": "Boston",
+    "hobbies": "Gardening, Writing",
+    "salary": 90000,
+    "married": true,
+    "children": 3,
+    "date": "2020-11-05"
+  },
+  {
+    "name": "Frank Harris",
+    "age": 38,
+    "job": "Marketing Specialist",
+    "favorite_color": "Orange",
+    "city": "Chicago",
+    "hobbies": "Photography, Tennis",
+    "salary": 85000,
+    "married": false,
+    "children": 1,
+    "date": "2022-02-18"
+  },
+  {
+    "name": "Grace Miller",
+    "age": 26,
+    "job": "Graphic Designer",
+    "favorite_color": "Pink",
+    "city": "Seattle",
+    "hobbies": "Drawing, Reading",
+    "salary": 72000,
+    "married": false,
+    "children": 0,
+    "date": "2023-07-25"
+  },
+  {
+    "name": "Henry Turner",
+    "age": 45,
+    "job": "Architect",
+    "favorite_color": "Blue",
+    "city": "Miami",
+    "hobbies": "Sailing, Photography",
+    "salary": 130000,
+    "married": true,
+    "children": 2,
+    "date": "2021-09-12"
+  },
+  {
+    "name": "Isabella Parker",
+    "age": 33,
+    "job": "Financial Analyst",
+    "favorite_color": "Green",
+    "city": "Denver",
+    "hobbies": "Running, Investing",
+    "salary": 95000,
+    "married": false,
+    "children": 0,
+    "date": "2022-04-09"
+  },
+  {
+    "name": "James Adams",
+    "age": 41,
+    "job": "Business Consultant",
+    "favorite_color": "Black",
+    "city": "Houston",
+    "hobbies": "Golf, Reading",
+    "salary": 125000,
+    "married": true,
+    "children": 1,
+    "date": "2020-10-28"
+  },
+  {
+    "name": "Katie Bennett",
+    "age": 37,
+    "job": "Teacher",
+    "favorite_color": "Red",
+    "city": "Dallas",
+    "hobbies": "Yoga, Cooking",
+    "salary": 58000,
+    "married": true,
+    "children": 2,
+    "date": "2021-01-12"
+  },
+  {
+    "name": "Liam Baker",
+    "age": 32,
+    "job": "Mechanical Engineer",
+    "favorite_color": "Blue",
+    "city": "Phoenix",
+    "hobbies": "Car Racing, Hiking",
+    "salary": 105000,
+    "married": false,
+    "children": 0,
+    "date": "2023-05-05"
+  },
+  {
+    "name": "Mia Scott",
+    "age": 29,
+    "job": "Interior Designer",
+    "favorite_color": "Purple",
+    "city": "San Diego",
+    "hobbies": "Painting, Music",
+    "salary": 80000,
+    "married": false,
+    "children": 0,
+    "date": "2022-07-30"
+  },
+  {
+    "name": "Noah Edwards",
+    "age": 43,
+    "job": "Electrical Engineer",
+    "favorite_color": "White",
+    "city": "Las Vegas",
+    "hobbies": "Fishing, Traveling",
+    "salary": 115000,
+    "married": true,
+    "children": 3,
+    "date": "2021-03-14"
+  },
+  {
+    "name": "Olivia Johnson",
+    "age": 39,
+    "job": "Operations Manager",
+    "favorite_color": "Yellow",
+    "city": "Atlanta",
+    "hobbies": "Biking, Fitness",
+    "salary": 98000,
+    "married": true,
+    "children": 2,
+    "date": "2020-12-01"
+  }
+];
