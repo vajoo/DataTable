@@ -4,9 +4,8 @@ import { TableHeader, TableBody, TableFooter, ColumnSelector } from '../componen
 import { EditModal, ConfirmModal, InsertionModal } from '../components/layout';
 
 const Table = ({ initialData = [], customColumnNames = {}, rowsPerPage = 50 }) => {
-  // Initialize the table data with unique IDs
   const [tableData, setTableData] = useState(() =>
-    initialData.map(data => ({ ...data, id: uuidv4() })) // Assign a unique ID
+    initialData.map(data => ({ ...data, uuid: uuidv4() })) // Assign a unique ID
   );
   const [filters, setFilters] = useState({});
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
@@ -79,7 +78,7 @@ const Table = ({ initialData = [], customColumnNames = {}, rowsPerPage = 50 }) =
       if (isChecked) {
         return [...prevCheckedRows, rowData];
       } else {
-        return prevCheckedRows.filter(row => row.id !== rowData.id);
+        return prevCheckedRows.filter(row => row.uuid !== rowData.uuid);
       }
     });
   };
@@ -95,14 +94,26 @@ const Table = ({ initialData = [], customColumnNames = {}, rowsPerPage = 50 }) =
 
   const handleEditSave = (updatedRowData) => {
     const updatedData = tableData.map((row) =>
-      row.id === updatedRowData.id ? updatedRowData : row
+      row.uuid === updatedRowData.uuid ? updatedRowData : row
     );
     setTableData(updatedData); 
     handleEditModalClose(); 
   };
 
   const handleInsertSave = (newRowData) => {
-    const updatedData = [...tableData, { ...newRowData, id: uuidv4() }]; // Assign a unique ID for the new row
+    const hasIdField = tableData.some(row => row.hasOwnProperty('id'));
+    let newRow;
+
+    if (hasIdField) {
+        const maxId = tableData.reduce((max, row) => (row.id > max ? row.id : max), 0);
+        const newId = maxId + 1;
+
+        newRow = { id: newId, ...newRowData };
+    } else {
+        newRow = { ...newRowData };
+    }
+
+    const updatedData = [...tableData, { ...newRow, uuid: uuidv4() }]; // Assign a unique ID for the new row
     setTableData(updatedData);
     handleInsertModalClose();
   };
@@ -112,6 +123,7 @@ const Table = ({ initialData = [], customColumnNames = {}, rowsPerPage = 50 }) =
   };
 
   const deleteCheckedRows = () => {
+    setCurrentPage(1);
     setTableData((prevData) => prevData.filter(row => !checkedRows.includes(row)));
     setCheckedRows((prevCheckedRows) => prevCheckedRows.filter(row => !checkedRows.includes(row)));
   };

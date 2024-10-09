@@ -66,7 +66,7 @@ const EditModal = ({ isOpen, onClose, rowData, onSave }) => {
 
         <h2 className="text-xl font-bold mb-4">Edit Row Data</h2>
         {Object.keys(formData).map((key) => {
-            if (key === 'id') {
+            if (key === 'uuid' || key === 'id') {
                 return null;
             }
             const isDate = typeof rowData[key] === 'string' && !isNaN(Date.parse(rowData[key]));

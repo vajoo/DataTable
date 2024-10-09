@@ -7,7 +7,7 @@ function App() {
   return(
     <div className="p-4">
       {/* <Navbar /> */}
-      <Table initialData={people_short} customColumnNames={{ name: "Full Name" }} rowsPerPage={20} />
+      <Table initialData={people} customColumnNames={{ name: "Full Name" }} rowsPerPage={20} />
       {/* <Footer /> */}
     </div>
   );
