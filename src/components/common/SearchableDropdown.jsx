@@ -1,10 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { cross } from '../../assets/icons';
 
-const SearchableDropdown = ({ options, placeholder, onChange }) => {
+const SearchableDropdown = ({ options, placeholder, onChange, value='' }) => {
     const [filteredOptions, setFilteredOptions] = useState(options);
-    const [inputValue, setInputValue] = useState('');
+    const [inputValue, setInputValue] = useState(value);
     const [showDropdown, setShowDropdown] = useState(false);
+
+    useEffect(() => {
+      setInputValue(value);
+    }, [value]);
 
     const handleInputChange = (e) => {
       const value = e.target.value;
